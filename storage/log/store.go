@@ -9,9 +9,9 @@ import (
 
 type Store struct {
 	*os.File
-	mutex 	sync.Mutex
-	buffer 	*bufio.Writer
-	size 	uint64
+	mutex  sync.Mutex
+	buffer *bufio.Writer
+	size   uint64
 }
 
 func NewStore(file *os.File) (*Store, error) {

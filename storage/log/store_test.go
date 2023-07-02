@@ -22,7 +22,7 @@ func TestReadAndWrite(t *testing.T) {
 		n, position, err := store.Write([]byte("hello world"))
 		width := uint64(len([]byte("hello world"))) + 8
 		require.NoError(t, err)
-		require.Equal(t, position + n, width * i)
+		require.Equal(t, position+n, width*i)
 	}
 
 	// Test the Read method.
