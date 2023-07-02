@@ -9,6 +9,20 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func openFile(name string) (*os.File, int64, error) {
+	file, err := os.OpenFile(name, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	fileInfo, err := file.Stat()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return file, fileInfo.Size(), nil
+}
+
 func TestReadAndWrite(t *testing.T) {
 	file, err := ioutil.TempFile("", "store_read_and_write_test")
 	require.NoError(t, err)
@@ -49,4 +63,31 @@ func TestReadAndWrite(t *testing.T) {
 		require.Equal(t, int(size), n)
 		offset += int64(n)
 	}
+}
+
+func TestClose(t *testing.T) {
+	file, err := ioutil.TempFile("", "store_close_test")
+	require.NoError(t, err)
+	defer os.Remove(file.Name())
+
+	store, err := NewStore(file)
+	require.NoError(t, err)
+
+	_, _, err = store.Write([]byte("hello world"))
+	require.NoError(t, err)
+
+	file, size_one, err := openFile(file.Name())
+	require.NoError(t, err)
+
+	// Test the Close method.
+	err = store.Close()
+	require.NoError(t, err)
+
+	_, size_two, err := openFile(file.Name())
+	require.NoError(t, err)
+	require.True(t, size_two > size_one)
+
+	// Test that the file was closed.
+	_, err = store.File.Stat()
+	require.Error(t, err)
 }
