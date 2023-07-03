@@ -1,4 +1,4 @@
-package log
+package storage
 
 import (
 	"encoding/binary"

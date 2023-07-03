@@ -1,4 +1,4 @@
-package log
+package storage
 
 import (
 	"bufio"
@@ -43,7 +43,7 @@ func (store *Store) Write(p []byte) (n uint64, position uint64, err error) {
 		return 0, 0, err
 	}
 
-	written += 8
+	written += 8 // 8 bytes for the size of the data.
 
 	store.size += uint64(written)
 	return uint64(written), position, nil
