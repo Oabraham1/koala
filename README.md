@@ -1,4 +1,4 @@
-# Koala
+# 🐨 Koala
 
 ![workflow](https://github.com/oabraham1/koala/actions/workflows/go.yml/badge.svg)
 
