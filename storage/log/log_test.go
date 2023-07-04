@@ -6,10 +6,10 @@ import (
 	"os"
 	"testing"
 
-	protoutil "github.com/oabraham1/kola/proto/v1"
+	proto "github.com/oabraham1/kola/proto/v1"
 	"github.com/oabraham1/kola/storage/index"
 	"github.com/stretchr/testify/require"
-	"google.golang.org/protobuf/proto"
+	protoc "google.golang.org/protobuf/proto"
 )
 
 const (
@@ -40,14 +40,14 @@ func TestLog(t *testing.T) {
 }
 
 func testLogWrite(t *testing.T, log *Log) {
-	append := &protoutil.Data{Properties: json.RawMessage(`{"test": "test"}`)}
+	append := &proto.Data{Properties: json.RawMessage(`{"test": "test"}`)}
 	offset, err := log.Write(append)
 	require.NoError(t, err)
 	require.Equal(t, uint64(0), offset)
 }
 
 func testLogRead(t *testing.T, log *Log) {
-	append := &protoutil.Data{Properties: json.RawMessage(`{"test": "test"}`)}
+	append := &proto.Data{Properties: json.RawMessage(`{"test": "test"}`)}
 	offset, err := log.Write(append)
 	require.NoError(t, err)
 	require.Equal(t, uint64(0), offset)
@@ -64,7 +64,7 @@ func testLogOutOfRange(t *testing.T, log *Log) {
 }
 
 func testLogInitExisting(t *testing.T, log *Log) {
-	append := &protoutil.Data{Properties: json.RawMessage(`{"test": "test"}`)}
+	append := &proto.Data{Properties: json.RawMessage(`{"test": "test"}`)}
 	for i := 0; i < 3; i++ {
 		_, err := log.Write(append)
 		require.NoError(t, err)
@@ -90,7 +90,7 @@ func testLogInitExisting(t *testing.T, log *Log) {
 }
 
 func testLogReader(t *testing.T, log *Log) {
-	append := &protoutil.Data{Properties: json.RawMessage(`{"test": "test"}`)}
+	append := &proto.Data{Properties: json.RawMessage(`{"test": "test"}`)}
 	offset, err := log.Write(append)
 	require.NoError(t, err)
 	require.Equal(t, uint64(0), offset)
@@ -99,14 +99,14 @@ func testLogReader(t *testing.T, log *Log) {
 	buffer, error := ioutil.ReadAll(reader)
 	require.NoError(t, error)
 
-	record := &protoutil.Data{}
-	err = proto.Unmarshal(buffer[lenWidth:], record)
+	record := &proto.Data{}
+	err = protoc.Unmarshal(buffer[lenWidth:], record)
 	require.NoError(t, err)
 	require.Equal(t, append.Properties, record.Properties)
 }
 
 func testLogTruncate(t *testing.T, log *Log) {
-	append := &protoutil.Data{Properties: json.RawMessage(`{"test": "test"}`)}
+	append := &proto.Data{Properties: json.RawMessage(`{"test": "test"}`)}
 	for i := 0; i < 3; i++ {
 		_, err := log.Write(append)
 		require.NoError(t, err)
