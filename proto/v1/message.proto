@@ -6,7 +6,7 @@ import "google/protobuf/descriptor.proto";
 option go_package = "github.com/oabraham1/koala/proto";
 
 message Data {
- bytes properties = 1;
+  bytes properties = 1;
   uint64 offset = 2;
   bytes timestamp = 3;
 }
