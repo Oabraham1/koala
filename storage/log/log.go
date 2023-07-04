@@ -2,7 +2,6 @@ package log
 
 import (
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"sort"
@@ -10,10 +9,10 @@ import (
 	"strings"
 	"sync"
 
-	proto "github.com/oabraham1/kola/proto/v1"
-	"github.com/oabraham1/kola/storage/index"
-	"github.com/oabraham1/kola/storage/segment"
-	"github.com/oabraham1/kola/storage/store"
+	proto "github.com/oabraham1/koala/proto/v1"
+	"github.com/oabraham1/koala/storage/index"
+	"github.com/oabraham1/koala/storage/segment"
+	"github.com/oabraham1/koala/storage/store"
 )
 
 type Log struct {
@@ -30,7 +29,7 @@ type OriginReader struct {
 }
 
 func (log *Log) Setup() error {
-	files, err := ioutil.ReadDir(log.Directory)
+	files, err := os.ReadDir(log.Directory)
 	if err != nil {
 		return err
 	}

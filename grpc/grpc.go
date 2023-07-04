@@ -3,7 +3,7 @@ package grpc
 import (
 	"context"
 
-	"github.com/oabraham1/kola/proto/v1"
+	"github.com/oabraham1/koala/proto/v1"
 	"google.golang.org/grpc"
 )
 

@@ -5,9 +5,9 @@ import (
 	"os"
 	"path"
 
-	proto "github.com/oabraham1/kola/proto/v1"
-	"github.com/oabraham1/kola/storage/index"
-	"github.com/oabraham1/kola/storage/store"
+	proto "github.com/oabraham1/koala/proto/v1"
+	"github.com/oabraham1/koala/storage/index"
+	"github.com/oabraham1/koala/storage/store"
 	protoc "google.golang.org/protobuf/proto"
 )
 

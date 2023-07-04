@@ -2,7 +2,6 @@ package store
 
 import (
 	"encoding/binary"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -24,7 +23,7 @@ func openFile(name string) (*os.File, int64, error) {
 }
 
 func TestReadAndWrite(t *testing.T) {
-	file, err := ioutil.TempFile("", "store_read_and_write_test")
+	file, err := os.CreateTemp("", "store_read_and_write_test")
 	require.NoError(t, err)
 	defer os.Remove(file.Name())
 
@@ -66,7 +65,7 @@ func TestReadAndWrite(t *testing.T) {
 }
 
 func TestClose(t *testing.T) {
-	file, err := ioutil.TempFile("", "store_close_test")
+	file, err := os.CreateTemp("", "store_close_test")
 	require.NoError(t, err)
 	defer os.Remove(file.Name())
 

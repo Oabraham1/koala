@@ -3,13 +3,12 @@ package index
 import (
 	"github.com/stretchr/testify/require"
 	"io"
-	"io/ioutil"
 	"os"
 	"testing"
 )
 
 func TestIndex(t *testing.T) {
-	file, err := ioutil.TempFile(os.TempDir(), "index_test")
+	file, err := os.CreateTemp(os.TempDir(), "index_test")
 	require.NoError(t, err)
 	defer os.Remove(file.Name())
 

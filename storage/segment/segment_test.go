@@ -3,12 +3,11 @@ package segment
 import (
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"os"
 	"testing"
 
-	protoutil "github.com/oabraham1/kola/proto/v1"
-	"github.com/oabraham1/kola/storage/index"
+	protoutil "github.com/oabraham1/koala/proto/v1"
+	"github.com/oabraham1/koala/storage/index"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -20,7 +19,7 @@ var (
 )
 
 func TestSegment(t *testing.T) {
-	directory, _ := ioutil.TempDir("", "Testing Segment file")
+	directory, _ := os.MkdirTemp("", "Testing Segment file")
 	defer os.Remove(directory)
 
 	want := &protoutil.Data{Properties: json.RawMessage(`{"test": "test"}`), Timestamp: json.RawMessage(timestamppb.Now().String())}

@@ -2,12 +2,12 @@ package log
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
 
-	proto "github.com/oabraham1/kola/proto/v1"
-	"github.com/oabraham1/kola/storage/index"
+	proto "github.com/oabraham1/koala/proto/v1"
+	"github.com/oabraham1/koala/storage/index"
 	"github.com/stretchr/testify/require"
 	protoc "google.golang.org/protobuf/proto"
 )
@@ -26,7 +26,7 @@ func TestLog(t *testing.T) {
 		"truncate_lowest":       testLogTruncate,
 	} {
 		t.Run(scenerio, func(t *testing.T) {
-			dir, err := ioutil.TempDir("", "Testing Log")
+			dir, err := os.MkdirTemp("", "Testing Log")
 			require.NoError(t, err)
 			defer os.RemoveAll(dir)
 			config := index.Config{}
@@ -96,7 +96,7 @@ func testLogReader(t *testing.T, log *Log) {
 	require.Equal(t, uint64(0), offset)
 
 	reader := log.Reader()
-	buffer, error := ioutil.ReadAll(reader)
+	buffer, error := io.ReadAll(reader)
 	require.NoError(t, error)
 
 	record := &proto.Data{}
