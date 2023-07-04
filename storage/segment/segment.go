@@ -12,10 +12,11 @@ import (
 )
 
 type Segment struct {
-	store                  *store.Store
-	index                  *index.Index
-	baseOffset, nextOffset uint64
-	config                 index.Config
+	store      *store.Store
+	index      *index.Index
+	baseOffset uint64
+	nextOffset uint64
+	config     index.Config
 }
 
 func NewSegment(directory string, baseOffset uint64, config index.Config) (*Segment, error) {
@@ -89,9 +90,21 @@ func (segment *Segment) Read(offset uint64) (*protoutil.Data, error) {
 	return record, err
 }
 
+func (segment *Segment) GetStore() *store.Store {
+	return segment.store
+}
+
 func (segment *Segment) IsMaxed() bool {
 	return segment.store.GetSize() >= segment.config.Segment.MaxStoreBytes ||
 		segment.index.GetSize() >= segment.config.Segment.MaxIndexBytes
+}
+
+func (segment *Segment) GetNextOffset() uint64 {
+	return segment.nextOffset
+}
+
+func (segment *Segment) GetBaseOffset() uint64 {
+	return segment.baseOffset
 }
 
 func (segment *Segment) Close() error {
