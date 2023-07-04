@@ -5,10 +5,10 @@ import (
 	"os"
 	"path"
 
-	protoutil "github.com/oabraham1/kola/proto/v1"
+	proto "github.com/oabraham1/kola/proto/v1"
 	"github.com/oabraham1/kola/storage/index"
 	"github.com/oabraham1/kola/storage/store"
-	"google.golang.org/protobuf/proto"
+	protoc "google.golang.org/protobuf/proto"
 )
 
 type Segment struct {
@@ -55,10 +55,10 @@ func NewSegment(directory string, baseOffset uint64, config index.Config) (*Segm
 	return segment, nil
 }
 
-func (segment *Segment) Write(record *protoutil.Data) (offset uint64, err error) {
+func (segment *Segment) Write(record *proto.Data) (offset uint64, err error) {
 	cursor := segment.nextOffset
 	record.Offset = cursor
-	proto, err := proto.Marshal(record)
+	proto, err := protoc.Marshal(record)
 	if err != nil {
 		return 0, err
 	}
@@ -76,7 +76,7 @@ func (segment *Segment) Write(record *protoutil.Data) (offset uint64, err error)
 	return cursor, nil
 }
 
-func (segment *Segment) Read(offset uint64) (*protoutil.Data, error) {
+func (segment *Segment) Read(offset uint64) (*proto.Data, error) {
 	_, position, err := segment.index.Read(int64(offset - segment.baseOffset))
 	if err != nil {
 		return nil, err
@@ -85,8 +85,8 @@ func (segment *Segment) Read(offset uint64) (*protoutil.Data, error) {
 	if err != nil {
 		return nil, err
 	}
-	record := &protoutil.Data{}
-	err = proto.Unmarshal(pos, record)
+	record := &proto.Data{}
+	err = protoc.Unmarshal(pos, record)
 	return record, err
 }
 

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"sync"
 
-	protoutil "github.com/oabraham1/kola/proto/v1"
+	proto "github.com/oabraham1/kola/proto/v1"
 	"github.com/oabraham1/kola/storage/index"
 	"github.com/oabraham1/kola/storage/segment"
 	"github.com/oabraham1/kola/storage/store"
@@ -82,7 +82,7 @@ func (log *Log) NewSegment(offset uint64) error {
 	return nil
 }
 
-func (log *Log) Write(data *protoutil.Data) (uint64, error) {
+func (log *Log) Write(data *proto.Data) (uint64, error) {
 	log.mutex.Lock()
 	defer log.mutex.Unlock()
 	offset, err := log.activeSegment.Write(data)
@@ -95,7 +95,7 @@ func (log *Log) Write(data *protoutil.Data) (uint64, error) {
 	return offset, err
 }
 
-func (log *Log) Read(offset uint64) (*protoutil.Data, error) {
+func (log *Log) Read(offset uint64) (*proto.Data, error) {
 	log.mutex.RLock()
 	defer log.mutex.RUnlock()
 	var segment *segment.Segment

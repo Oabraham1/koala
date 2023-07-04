@@ -2,7 +2,7 @@ syntax = "proto3";
 package proto.v1;
 import "google/protobuf/descriptor.proto";
 
-option go_package = "github.com/oabraham1/kola/protoutil";
+option go_package = "github.com/oabraham1/koala/proto";
 
 message Data  {
     bytes properties = 1;
