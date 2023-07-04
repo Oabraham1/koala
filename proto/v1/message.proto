@@ -7,5 +7,28 @@ option go_package = "github.com/oabraham1/koala/proto";
 message Data  {
     bytes properties = 1;
     uint64 Offset = 2;
-    uint64 timestamp = 3;
+    bytes timestamp = 3;
+}
+
+service Log {
+    rpc Produce(ProduceRequest) returns (ProduceResponse) {}
+    rpc Consume(ConsumeRequest) returns (ConsumeResponse) {}
+    rpc ConsumeStream(ConsumeRequest) returns (stream ConsumeResponse) {}
+    rpc ProduceStream(stream ProduceRequest) returns (stream ProduceResponse) {}
+}
+
+message ProduceRequest {
+    Data data = 1;
+}
+
+message ProduceResponse {
+    uint64 offset = 1;
+}
+
+message ConsumeRequest {
+    uint64 offset = 1;
+}
+
+message ConsumeResponse {
+    Data data = 1;
 }

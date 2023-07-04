@@ -1,7 +1,6 @@
 package log
 
 import (
-	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -106,7 +105,7 @@ func (log *Log) Read(offset uint64) (*proto.Data, error) {
 		}
 	}
 	if segment == nil || segment.GetNextOffset() <= offset {
-		return nil, fmt.Errorf("offset out of range: %d", offset)
+		return nil, &proto.ErrorOffsetOutOfRange{Offset: offset}
 	}
 	return segment.Read(offset)
 }
