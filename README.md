@@ -1,7 +1,7 @@
 # 🐨 Koala
 
 ![workflow](https://github.com/oabraham1/koala/actions/workflows/go.yml/badge.svg)
-![Last Commit](https://img.shields.io/github/last-commit/oabraham1/koala)
+![master](https://img.shields.io/github/last-commit/badges/koala/master)
 ![Pull Requests](https://img.shields.io/github/issues-pr/oabraham1/koala)
 ![Github License](https://img.shields.io/badge/License-Apache-green.svg)
 
