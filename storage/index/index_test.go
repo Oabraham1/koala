@@ -1,4 +1,4 @@
-package storage
+package index
 
 import (
 	"github.com/stretchr/testify/require"
@@ -22,7 +22,7 @@ func TestIndex(t *testing.T) {
 	require.Equal(t, file.Name(), index.GetIndexName())
 
 	entries := []struct {
-		Offset   uint64
+		Offset   uint32
 		Position uint64
 	}{
 		{Offset: 0, Position: 0},
@@ -47,6 +47,6 @@ func TestIndex(t *testing.T) {
 	require.NoError(t, err)
 	offset, position, err := index.Read(-1)
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), offset)
+	require.Equal(t, uint32(1), offset)
 	require.Equal(t, entries[1].Position, position)
 }

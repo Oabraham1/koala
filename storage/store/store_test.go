@@ -1,4 +1,4 @@
-package storage
+package store
 
 import (
 	"encoding/binary"
@@ -34,7 +34,7 @@ func TestReadAndWrite(t *testing.T) {
 	// Test the Write method.
 	for i := uint64(1); i < 4; i++ {
 		n, position, err := store.Write([]byte("hello world"))
-		width := uint64(len([]byte("hello world"))) + 8
+		width := uint64(len([]byte("hello world"))) + lenWidth
 		require.NoError(t, err)
 		require.Equal(t, position+n, width*i)
 	}
@@ -45,12 +45,12 @@ func TestReadAndWrite(t *testing.T) {
 		read, err := store.Read(position)
 		require.NoError(t, err)
 		require.Equal(t, []byte("hello world"), read)
-		position += uint64(len(read)) + 8
+		position += uint64(len(read)) + lenWidth
 	}
 
 	// Test the ReadAt method.
 	for i, offset := uint64(1), int64(0); i < 4; i++ {
-		bytes := make([]byte, 8)
+		bytes := make([]byte, lenWidth)
 		n, err := store.ReadAt(bytes, offset)
 		require.NoError(t, err)
 		offset += int64(n)

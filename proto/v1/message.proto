@@ -1,0 +1,11 @@
+syntax = "proto3";
+package proto.v1;
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/oabraham1/kola/protoutil";
+
+message Data  {
+    bytes properties = 1;
+    uint64 Offset = 2;
+    uint64 timestamp = 3;
+}

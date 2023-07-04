@@ -1,10 +1,14 @@
-package storage
+package store
 
 import (
 	"bufio"
 	"encoding/binary"
 	"os"
 	"sync"
+)
+
+const (
+	lenWidth = 8
 )
 
 type Store struct {
@@ -43,7 +47,7 @@ func (store *Store) Write(p []byte) (n uint64, position uint64, err error) {
 		return 0, 0, err
 	}
 
-	written += 8 // 8 bytes for the size of the data.
+	written += lenWidth // 8 bytes for the size of the data.
 
 	store.size += uint64(written)
 	return uint64(written), position, nil
@@ -57,13 +61,13 @@ func (store *Store) Read(position uint64) ([]byte, error) {
 		return nil, err
 	}
 
-	size := make([]byte, 8)
+	size := make([]byte, lenWidth)
 	if _, err := store.File.ReadAt(size, int64(position)); err != nil {
 		return nil, err
 	}
 
 	data := make([]byte, binary.BigEndian.Uint64(size))
-	if _, err := store.File.ReadAt(data, int64(position+8)); err != nil {
+	if _, err := store.File.ReadAt(data, int64(position+lenWidth)); err != nil {
 		return nil, err
 	}
 	return data, nil
@@ -77,6 +81,12 @@ func (store *Store) ReadAt(p []byte, offset int64) (int, error) {
 		return 0, err
 	}
 	return store.File.ReadAt(p, offset)
+}
+
+func (store *Store) GetSize() uint64 {
+	store.mutex.Lock()
+	defer store.mutex.Unlock()
+	return store.size
 }
 
 // Close flushes the buffer and closes the file. It persists any unwritten data to disk before closing the file.
