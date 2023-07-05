@@ -11,6 +11,7 @@ const (
 	lenWidth = 8
 )
 
+// Store represents a store file
 type Store struct {
 	*os.File
 	mutex  sync.Mutex
@@ -18,6 +19,7 @@ type Store struct {
 	size   uint64
 }
 
+// NewStore creates a new store file
 func NewStore(file *os.File) (*Store, error) {
 	dbFile, err := os.Stat(file.Name())
 	if err != nil {
@@ -83,6 +85,7 @@ func (store *Store) ReadAt(p []byte, offset int64) (int, error) {
 	return store.File.ReadAt(p, offset)
 }
 
+// GetSize returns the size of the store.
 func (store *Store) GetSize() uint64 {
 	store.mutex.Lock()
 	defer store.mutex.Unlock()

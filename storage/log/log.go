@@ -15,6 +15,7 @@ import (
 	"github.com/oabraham1/koala/storage/store"
 )
 
+// Log represents a commit log
 type Log struct {
 	mutex         sync.RWMutex
 	Directory     string
@@ -23,11 +24,13 @@ type Log struct {
 	segments      []*segment.Segment
 }
 
+// OriginReader represents a reader for the log
 type OriginReader struct {
 	*store.Store
 	offset int64
 }
 
+// Setup creates a new log
 func (log *Log) Setup() error {
 	files, err := os.ReadDir(log.Directory)
 	if err != nil {
@@ -56,6 +59,7 @@ func (log *Log) Setup() error {
 	return nil
 }
 
+// NewLog creates a new log
 func NewLog(directory string, config index.Config) (*Log, error) {
 	if config.Segment.MaxStoreBytes == 0 {
 		config.Segment.MaxStoreBytes = 1024
@@ -70,6 +74,7 @@ func NewLog(directory string, config index.Config) (*Log, error) {
 	return log, log.Setup()
 }
 
+// NewSegment creates a new segment
 func (log *Log) NewSegment(offset uint64) error {
 	segment, err := segment.NewSegment(log.Directory, offset, log.Config)
 	if err != nil {
@@ -80,6 +85,7 @@ func (log *Log) NewSegment(offset uint64) error {
 	return nil
 }
 
+// Write writes the data to the log
 func (log *Log) Write(data *proto.Data) (uint64, error) {
 	log.mutex.Lock()
 	defer log.mutex.Unlock()
@@ -93,6 +99,7 @@ func (log *Log) Write(data *proto.Data) (uint64, error) {
 	return offset, err
 }
 
+// Read reads the data from the log
 func (log *Log) Read(offset uint64) (*proto.Data, error) {
 	log.mutex.RLock()
 	defer log.mutex.RUnlock()
@@ -109,18 +116,21 @@ func (log *Log) Read(offset uint64) (*proto.Data, error) {
 	return segment.Read(offset)
 }
 
+// Read returns a reader for the log
 func (origin *OriginReader) Read(p []byte) (int, error) {
 	n, err := origin.ReadAt(p, origin.offset)
 	origin.offset += int64(n)
 	return n, err
 }
 
+// ReadLowestOffset returns the lowest offset in the log
 func (log *Log) ReadLowestOffset() (uint64, error) {
 	log.mutex.RLock()
 	defer log.mutex.RUnlock()
 	return log.segments[0].GetBaseOffset(), nil
 }
 
+// ReadHighestOffset returns the highest offset in the log
 func (log *Log) ReadHighestOffset() (uint64, error) {
 	log.mutex.RLock()
 	defer log.mutex.RUnlock()
@@ -131,6 +141,7 @@ func (log *Log) ReadHighestOffset() (uint64, error) {
 	return offset - 1, nil
 }
 
+// TruncateLowest truncates the log to the lowest offset
 func (log *Log) TruncateLowest(offset uint64) error {
 	log.mutex.Lock()
 	defer log.mutex.Unlock()
@@ -148,6 +159,7 @@ func (log *Log) TruncateLowest(offset uint64) error {
 	return nil
 }
 
+// Reader returns a reader for the log
 func (log *Log) Reader() io.Reader {
 	log.mutex.RLock()
 	defer log.mutex.RUnlock()
@@ -158,6 +170,7 @@ func (log *Log) Reader() io.Reader {
 	return io.MultiReader(readers...)
 }
 
+// Close closes the log
 func (log *Log) Close() error {
 	log.mutex.Lock()
 	defer log.mutex.Unlock()
@@ -169,6 +182,7 @@ func (log *Log) Close() error {
 	return nil
 }
 
+// Remove removes the log
 func (log *Log) Remove() error {
 	if err := log.Close(); err != nil {
 		return err
@@ -176,6 +190,7 @@ func (log *Log) Remove() error {
 	return os.RemoveAll(log.Directory)
 }
 
+// Reset resets the log
 func (log *Log) Reset() error {
 	if err := log.Remove(); err != nil {
 		return err

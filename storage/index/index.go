@@ -14,12 +14,14 @@ var (
 	entWidth        = offWidth + posWidth
 )
 
+// Index represents a index file
 type Index struct {
 	file *os.File
 	mmap gommap.MMap
 	size uint64
 }
 
+// Config represents the configuration of the index
 type Config struct {
 	Segment struct {
 		MaxStoreBytes uint64
@@ -28,6 +30,7 @@ type Config struct {
 	}
 }
 
+// NewIndex creates a new index file
 func NewIndex(file *os.File, config Config) (*Index, error) {
 	index := &Index{
 		file: file,
@@ -49,6 +52,7 @@ func NewIndex(file *os.File, config Config) (*Index, error) {
 	return index, nil
 }
 
+// Write writes the offset and position to the index file
 func (index *Index) Write(offset uint32, position uint64) error {
 	if uint64(len(index.mmap)) < index.size+entWidth {
 		return io.EOF
@@ -60,6 +64,7 @@ func (index *Index) Write(offset uint32, position uint64) error {
 	return nil
 }
 
+// Read reads the offset and position from the index file.
 func (index *Index) Read(input int64) (output uint32, position uint64, err error) {
 	if index.size == 0 {
 		return 0, 0, io.EOF
@@ -81,14 +86,17 @@ func (index *Index) Read(input int64) (output uint32, position uint64, err error
 	return output, position, nil
 }
 
+// GetIndexName returns the name of the index file
 func (index *Index) GetIndexName() string {
 	return index.file.Name()
 }
 
+// GetSize returns the size of the index file
 func (index *Index) GetSize() uint64 {
 	return index.size
 }
 
+// Close closes the index file
 func (index *Index) Close() error {
 	if err := index.mmap.Sync(gommap.MS_SYNC); err != nil {
 		return err
