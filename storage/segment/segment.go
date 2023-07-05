@@ -11,6 +11,7 @@ import (
 	protoc "google.golang.org/protobuf/proto"
 )
 
+// Segment represents a segment of the log
 type Segment struct {
 	store      *store.Store
 	index      *index.Index
@@ -19,6 +20,7 @@ type Segment struct {
 	config     index.Config
 }
 
+// NewSegment creates a new segment
 func NewSegment(directory string, baseOffset uint64, config index.Config) (*Segment, error) {
 	segment := &Segment{
 		baseOffset: baseOffset,
@@ -55,6 +57,7 @@ func NewSegment(directory string, baseOffset uint64, config index.Config) (*Segm
 	return segment, nil
 }
 
+// Write writes a record to the segment
 func (segment *Segment) Write(record *proto.Data) (offset uint64, err error) {
 	cursor := segment.nextOffset
 	record.Offset = cursor
@@ -76,6 +79,7 @@ func (segment *Segment) Write(record *proto.Data) (offset uint64, err error) {
 	return cursor, nil
 }
 
+// Read reads a record from the segment
 func (segment *Segment) Read(offset uint64) (*proto.Data, error) {
 	_, position, err := segment.index.Read(int64(offset - segment.baseOffset))
 	if err != nil {
@@ -90,23 +94,28 @@ func (segment *Segment) Read(offset uint64) (*proto.Data, error) {
 	return record, err
 }
 
+// GetStore returns the store of the segment
 func (segment *Segment) GetStore() *store.Store {
 	return segment.store
 }
 
+// IsMaxed returns true if the segment is maxed out
 func (segment *Segment) IsMaxed() bool {
 	return segment.store.GetSize() >= segment.config.Segment.MaxStoreBytes ||
 		segment.index.GetSize() >= segment.config.Segment.MaxIndexBytes
 }
 
+// GetNextOffset returns the next offset of the segment
 func (segment *Segment) GetNextOffset() uint64 {
 	return segment.nextOffset
 }
 
+// GetBaseOffset returns the base offset of the segment
 func (segment *Segment) GetBaseOffset() uint64 {
 	return segment.baseOffset
 }
 
+// Close closes the segment
 func (segment *Segment) Close() error {
 	if err := segment.index.Close(); err != nil {
 		return err
@@ -117,6 +126,7 @@ func (segment *Segment) Close() error {
 	return nil
 }
 
+// Remove removes the segment
 func (segment *Segment) Remove() error {
 	if err := segment.Close(); err != nil {
 		return err

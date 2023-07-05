@@ -13,23 +13,28 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// Config contains the configuration for gRPC
 type Config struct {
 	CommitLog  CommitLog
 	Authorizer Authorizer
 }
 
+// GRPCServer is a wrapper around proto.LogServer and Config
 type GRPCServer struct {
 	proto.UnimplementedLogServer
 	*Config
 }
 
+// Subject returns the subject from the context
 type SubjectContextKey struct{}
 
+// CommitLog is the interface that wraps the basic Write and Read methods
 type CommitLog interface {
 	Write(*proto.Data) (uint64, error)
 	Read(uint64) (*proto.Data, error)
 }
 
+// Authorizer is the interface that wraps the basic Authorize method
 type Authorizer interface {
 	Authorize(subject, object, action string) error
 }
@@ -42,6 +47,7 @@ const (
 	consumeAction  = "consume"
 )
 
+// newGRPCServer creates a new GRPCServer
 func newGRPCServer(config *Config) (grpcServer *GRPCServer, err error) {
 	grpcServer = &GRPCServer{
 		Config: config,
@@ -49,6 +55,7 @@ func newGRPCServer(config *Config) (grpcServer *GRPCServer, err error) {
 	return grpcServer, nil
 }
 
+// NewGRPCServer creates a new gRPC server
 func NewGRPCServer(config *Config, options ...grpc.ServerOption) (*grpc.Server, error) {
 	options = append(options, grpc.StreamInterceptor(
 		grpc_middleware.ChainStreamServer(grpc_auth.StreamServerInterceptor(Authenticate))), grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(grpc_auth.UnaryServerInterceptor(Authenticate))))
@@ -62,6 +69,7 @@ func NewGRPCServer(config *Config, options ...grpc.ServerOption) (*grpc.Server, 
 	return grpcServer, nil
 }
 
+// Produce is the implementation of the Produce RPC
 func (server *GRPCServer) Produce(ctx context.Context, request *proto.ProduceRequest) (*proto.ProduceResponse, error) {
 	if err := server.Authorizer.Authorize(Subject(ctx), objectWildcard, produceAction); err != nil {
 		return nil, err
@@ -73,6 +81,7 @@ func (server *GRPCServer) Produce(ctx context.Context, request *proto.ProduceReq
 	return &proto.ProduceResponse{Offset: offset}, nil
 }
 
+// Consume is the implementation of the Consume RPC
 func (server *GRPCServer) Consume(ctx context.Context, request *proto.ConsumeRequest) (*proto.ConsumeResponse, error) {
 	if err := server.Authorizer.Authorize(Subject(ctx), objectWildcard, consumeAction); err != nil {
 		return nil, err
@@ -84,6 +93,7 @@ func (server *GRPCServer) Consume(ctx context.Context, request *proto.ConsumeReq
 	return &proto.ConsumeResponse{Data: data}, nil
 }
 
+// ProduceStream is the implementation of the ProduceStream RPC
 func (server *GRPCServer) ProduceStream(stream proto.Log_ProduceStreamServer) error {
 	for {
 		request, err := stream.Recv()
@@ -100,6 +110,7 @@ func (server *GRPCServer) ProduceStream(stream proto.Log_ProduceStreamServer) er
 	}
 }
 
+// ConsumeStream is the implementation of the ConsumeStream RPC
 func (server *GRPCServer) ConsumeStream(request *proto.ConsumeRequest, stream proto.Log_ConsumeStreamServer) error {
 	for {
 		select {
@@ -122,6 +133,7 @@ func (server *GRPCServer) ConsumeStream(request *proto.ConsumeRequest, stream pr
 	}
 }
 
+// Authenticate authenticates the peer and returns the context
 func Authenticate(ctx context.Context) (context.Context, error) {
 	peer, ok := peer.FromContext(ctx)
 	if !ok {
@@ -136,6 +148,7 @@ func Authenticate(ctx context.Context) (context.Context, error) {
 	return context.WithValue(ctx, SubjectContextKey{}, subject), nil
 }
 
+// Subject returns the subject from the context
 func Subject(ctx context.Context) string {
 	return ctx.Value(SubjectContextKey{}).(string)
 }

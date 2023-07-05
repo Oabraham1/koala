@@ -7,6 +7,7 @@ import (
 	"os"
 )
 
+// TLSConfig contains the configuration for TLS
 type TLSConfig struct {
 	CAFile          string
 	CertificateFile string
@@ -15,6 +16,7 @@ type TLSConfig struct {
 	Server          bool
 }
 
+// SetupTLSConfiguration creates a tls.Config from a TLSConfig
 func SetupTLSConfiguration(config TLSConfig) (*tls.Config, error) {
 	var err error
 	tlsConfig := &tls.Config{}

@@ -75,16 +75,16 @@ func TestClose(t *testing.T) {
 	_, _, err = store.Write([]byte("hello world"))
 	require.NoError(t, err)
 
-	file, size_one, err := openFile(file.Name())
+	file, sizeOne, err := openFile(file.Name())
 	require.NoError(t, err)
 
 	// Test the Close method.
 	err = store.Close()
 	require.NoError(t, err)
 
-	_, size_two, err := openFile(file.Name())
+	_, sizeTwo, err := openFile(file.Name())
 	require.NoError(t, err)
-	require.True(t, size_two > size_one)
+	require.True(t, sizeTwo > sizeOne)
 
 	// Test that the file was closed.
 	_, err = store.File.Stat()

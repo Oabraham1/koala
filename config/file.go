@@ -17,6 +17,7 @@ var (
 	AccessControlPolicyFile     = configFile("access-control-policy.csv")
 )
 
+// configFile returns the path to a configuration file
 func configFile(name string) string {
 	if directory := os.Getenv("CONFIG_DIR"); directory != "" {
 		return filepath.Join(directory, name)
