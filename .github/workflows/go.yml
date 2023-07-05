@@ -18,8 +18,8 @@ jobs:
       with:
         go-version: 1.18
 
-    - name: Install dependencies
-      run: go mod download
+    - name: Install cfssl
+      run: go install github.com/cloudflare/cfssl/cmd/...@latest
 
     - name: Generate certificates
       run: make generate-certificate
