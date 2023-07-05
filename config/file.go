@@ -25,5 +25,5 @@ func configFile(name string) string {
 	if err != nil {
 		panic(err)
 	}
-	return filepath.Join(homeDirectory, "Desktop/koala", name)
+	return filepath.Join(homeDirectory, ".koala", name)
 }

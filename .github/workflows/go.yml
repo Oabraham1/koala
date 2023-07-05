@@ -21,6 +21,9 @@ jobs:
     - name: Install cfssl
       run: go install github.com/cloudflare/cfssl/cmd/...@latest
 
+    - name: Create Directory
+      run: make init
+
     - name: Generate certificates
       run: make generate-certificate
 

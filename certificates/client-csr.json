@@ -5,11 +5,13 @@
         "algo": "rsa",
         "size": 2048
     },
-    "names": [{
-        "C": "CN",
-        "ST": "New York",
-        "L": "New York",
-        "O": "Koala",
-        "OU": "Koala"
-    }]
+    "names": [
+        {
+            "C": "CA",
+            "ST": "New York",
+            "L": "New York",
+            "O": "Koala",
+            "OU": "Koala"
+        }
+    ]
 }
