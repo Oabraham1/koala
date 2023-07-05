@@ -1,4 +1,10 @@
-CONFIG_PATH=${HOME}/.koala/
+CONFIG_PATH=${HOME}/Desktop/koala
+
+$(CONFIG_PATH)/access-control-model.conf:
+	cp certificates/access-control-model.conf $(CONFIG_PATH)/access-control-model.conf
+
+$(CONFIG_PATH)/access-control-policy.csv:
+	cp certificates/access-control-policy.csv $(CONFIG_PATH)/access-control-policy.csv
 
 .PHONY: init
 init:
@@ -15,8 +21,24 @@ generate-certificate:
 		-profile=server \
 		certificates/server-csr.json | cfssljson -bare server
 
+	cfssl gencert \
+		-ca=ca.pem \
+		-ca-key=ca-key.pem \
+		-config=certificates/ca-config.json \
+		-profile=client \
+		-cn="root" \
+		certificates/client-csr.json | cfssljson -bare root-client
+
+	cfssl gencert \
+		-ca=ca.pem \
+		-ca-key=ca-key.pem \
+		-config=certificates/ca-config.json \
+		-profile=client \
+		-cn="nobody" \
+		certificates/client-csr.json | cfssljson -bare nobody-client
+
 .PHONY: test
-test:
+test: $(CONFIG_PATH)/access-control-policy.csv $(CONFIG_PATH)/access-control-model.conf
 	go test -race -coverprofile=coverage.txt -covermode=atomic ./...
 
 .PHONY: build
