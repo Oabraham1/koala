@@ -3,25 +3,44 @@ package grpc
 import (
 	"context"
 
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"github.com/oabraham1/koala/proto/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/peer"
+	"google.golang.org/grpc/status"
 )
 
 type Config struct {
-	CommitLog CommitLog
-}
-
-var _ proto.LogServer = (*GRPCServer)(nil)
-
-type CommitLog interface {
-	Write(*proto.Data) (uint64, error)
-	Read(uint64) (*proto.Data, error)
+	CommitLog  CommitLog
+	Authorizer Authorizer
 }
 
 type GRPCServer struct {
 	proto.UnimplementedLogServer
 	*Config
 }
+
+type SubjectContextKey struct{}
+
+type CommitLog interface {
+	Write(*proto.Data) (uint64, error)
+	Read(uint64) (*proto.Data, error)
+}
+
+type Authorizer interface {
+	Authorize(subject, object, action string) error
+}
+
+var _ proto.LogServer = (*GRPCServer)(nil)
+
+const (
+	objectWildcard = "*"
+	produceAction  = "produce"
+	consumeAction  = "consume"
+)
 
 func newGRPCServer(config *Config) (grpcServer *GRPCServer, err error) {
 	grpcServer = &GRPCServer{
@@ -30,8 +49,11 @@ func newGRPCServer(config *Config) (grpcServer *GRPCServer, err error) {
 	return grpcServer, nil
 }
 
-func NewGRPCServer(config *Config) (*grpc.Server, error) {
-	grpcServer := grpc.NewServer()
+func NewGRPCServer(config *Config, options ...grpc.ServerOption) (*grpc.Server, error) {
+	options = append(options, grpc.StreamInterceptor(
+		grpc_middleware.ChainStreamServer(grpc_auth.StreamServerInterceptor(Authenticate))), grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(grpc_auth.UnaryServerInterceptor(Authenticate))))
+
+	grpcServer := grpc.NewServer(options...)
 	server, err := newGRPCServer(config)
 	if err != nil {
 		return nil, err
@@ -41,6 +63,9 @@ func NewGRPCServer(config *Config) (*grpc.Server, error) {
 }
 
 func (server *GRPCServer) Produce(ctx context.Context, request *proto.ProduceRequest) (*proto.ProduceResponse, error) {
+	if err := server.Authorizer.Authorize(Subject(ctx), objectWildcard, produceAction); err != nil {
+		return nil, err
+	}
 	offset, err := server.CommitLog.Write(request.Data)
 	if err != nil {
 		return nil, err
@@ -49,6 +74,9 @@ func (server *GRPCServer) Produce(ctx context.Context, request *proto.ProduceReq
 }
 
 func (server *GRPCServer) Consume(ctx context.Context, request *proto.ConsumeRequest) (*proto.ConsumeResponse, error) {
+	if err := server.Authorizer.Authorize(Subject(ctx), objectWildcard, consumeAction); err != nil {
+		return nil, err
+	}
 	data, err := server.CommitLog.Read(request.Offset)
 	if err != nil {
 		return nil, err
@@ -92,4 +120,22 @@ func (server *GRPCServer) ConsumeStream(request *proto.ConsumeRequest, stream pr
 			request.Offset++
 		}
 	}
+}
+
+func Authenticate(ctx context.Context) (context.Context, error) {
+	peer, ok := peer.FromContext(ctx)
+	if !ok {
+		return ctx, status.New(codes.Unknown, "no peer found").Err()
+	}
+	if peer.AuthInfo == nil {
+		return context.WithValue(ctx, SubjectContextKey{}, ""), nil
+	}
+
+	transportLayerSecurityInfo := peer.AuthInfo.(credentials.TLSInfo)
+	subject := transportLayerSecurityInfo.State.VerifiedChains[0][0].Subject.CommonName
+	return context.WithValue(ctx, SubjectContextKey{}, subject), nil
+}
+
+func Subject(ctx context.Context) string {
+	return ctx.Value(SubjectContextKey{}).(string)
 }
