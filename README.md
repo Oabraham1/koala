@@ -6,4 +6,4 @@
 ![Pull Requests](https://img.shields.io/github/issues-pr/oabraham1/koala)
 ![Github License](https://img.shields.io/badge/License-Apache-green.svg)
 
-Koala is an open-source analytics tracking tool built purely in Go.
+Koala is an open-source analytics tracking tool built purely in Go
