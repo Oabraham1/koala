@@ -133,8 +133,7 @@ func Authenticate(ctx context.Context) (context.Context, error) {
 
 	transportLayerSecurityInfo := peer.AuthInfo.(credentials.TLSInfo)
 	subject := transportLayerSecurityInfo.State.VerifiedChains[0][0].Subject.CommonName
-	ctx = context.WithValue(ctx, SubjectContextKey{}, subject)
-	return ctx, nil
+	return context.WithValue(ctx, SubjectContextKey{}, subject), nil
 }
 
 func Subject(ctx context.Context) string {
