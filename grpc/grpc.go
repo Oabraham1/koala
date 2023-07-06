@@ -20,12 +20,12 @@ type Config struct {
 }
 
 // GRPCServer is a wrapper around proto.LogServer and Config
-type Server struct {
+type GRPCServer struct {
 	proto.UnimplementedLogServer
 	*Config
 }
 
-// SubjectContextKey returns the subject from the context
+// Subject returns the subject from the context
 type SubjectContextKey struct{}
 
 // CommitLog is the interface that wraps the basic Write and Read methods
@@ -39,7 +39,7 @@ type Authorizer interface {
 	Authorize(subject, object, action string) error
 }
 
-var _ proto.LogServer = (*Server)(nil)
+var _ proto.LogServer = (*GRPCServer)(nil)
 
 const (
 	objectWildcard = "*"
@@ -48,8 +48,8 @@ const (
 )
 
 // newGRPCServer creates a new GRPCServer
-func newGRPCServer(config *Config) (grpcServer *Server, err error) {
-	grpcServer = &Server{
+func newGRPCServer(config *Config) (grpcServer *GRPCServer, err error) {
+	grpcServer = &GRPCServer{
 		Config: config,
 	}
 	return grpcServer, nil
@@ -70,7 +70,7 @@ func NewGRPCServer(config *Config, options ...grpc.ServerOption) (*grpc.Server, 
 }
 
 // Produce is the implementation of the Produce RPC
-func (server *Server) Produce(ctx context.Context, request *proto.ProduceRequest) (*proto.ProduceResponse, error) {
+func (server *GRPCServer) Produce(ctx context.Context, request *proto.ProduceRequest) (*proto.ProduceResponse, error) {
 	if err := server.Authorizer.Authorize(Subject(ctx), objectWildcard, produceAction); err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (server *Server) Produce(ctx context.Context, request *proto.ProduceRequest
 }
 
 // Consume is the implementation of the Consume RPC
-func (server *Server) Consume(ctx context.Context, request *proto.ConsumeRequest) (*proto.ConsumeResponse, error) {
+func (server *GRPCServer) Consume(ctx context.Context, request *proto.ConsumeRequest) (*proto.ConsumeResponse, error) {
 	if err := server.Authorizer.Authorize(Subject(ctx), objectWildcard, consumeAction); err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func (server *Server) Consume(ctx context.Context, request *proto.ConsumeRequest
 }
 
 // ProduceStream is the implementation of the ProduceStream RPC
-func (server *Server) ProduceStream(stream proto.Log_ProduceStreamServer) error {
+func (server *GRPCServer) ProduceStream(stream proto.Log_ProduceStreamServer) error {
 	for {
 		request, err := stream.Recv()
 		if err != nil {
@@ -111,7 +111,7 @@ func (server *Server) ProduceStream(stream proto.Log_ProduceStreamServer) error 
 }
 
 // ConsumeStream is the implementation of the ConsumeStream RPC
-func (server *Server) ConsumeStream(request *proto.ConsumeRequest, stream proto.Log_ConsumeStreamServer) error {
+func (server *GRPCServer) ConsumeStream(request *proto.ConsumeRequest, stream proto.Log_ConsumeStreamServer) error {
 	for {
 		select {
 		case <-stream.Context().Done():
