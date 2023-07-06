@@ -19,7 +19,7 @@ type Config struct {
 	Authorizer Authorizer
 }
 
-// GRPCServer is a wrapper around proto.LogServer and Config
+// Server is a wrapper around proto.LogServer and Config
 type Server struct {
 	proto.UnimplementedLogServer
 	*Config
