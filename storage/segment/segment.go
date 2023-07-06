@@ -120,10 +120,7 @@ func (segment *Segment) Close() error {
 	if err := segment.index.Close(); err != nil {
 		return err
 	}
-	if err := segment.store.Close(); err != nil {
-		return err
-	}
-	return nil
+	return segment.store.Close()
 }
 
 // Remove removes the segment
@@ -134,8 +131,5 @@ func (segment *Segment) Remove() error {
 	if err := os.Remove(segment.index.GetIndexName()); err != nil {
 		return err
 	}
-	if err := os.Remove(segment.store.Name()); err != nil {
-		return err
-	}
-	return nil
+	return os.Remove(segment.store.Name())
 }
