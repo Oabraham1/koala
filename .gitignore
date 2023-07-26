@@ -3,3 +3,4 @@ coverage.txt
 .idea
 *.csr
 *.pem
+target
