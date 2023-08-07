@@ -2,12 +2,12 @@ use std::time::{Duration, Instant};
 
 struct CPUReading {
     _cpu_usage: f32,
-    _time_stamp: Instant
+    _time_stamp: Instant,
 }
 
 struct GPUReading {
     _gpu_usage: f32,
-    _time_stamp: Instant
+    _time_stamp: Instant,
 }
 
 pub(crate) fn cpu() {
@@ -72,8 +72,8 @@ fn get_num_gpu_threads() -> u16 {
 fn get_cpu_usage() -> CPUReading {
     return CPUReading {
         _cpu_usage: 1.0,
-        _time_stamp: Instant::now() + Duration::from_secs(3)
-    }
+        _time_stamp: Instant::now() + Duration::from_secs(3),
+    };
 }
 
 /*
@@ -84,8 +84,8 @@ fn get_cpu_usage() -> CPUReading {
 fn get_gpu_usage() -> GPUReading {
     return GPUReading {
         _gpu_usage: 1.0,
-        _time_stamp: Instant::now() + Duration::from_secs(3)
-    }
+        _time_stamp: Instant::now() + Duration::from_secs(3),
+    };
 }
 
 /*
@@ -96,7 +96,7 @@ fn get_gpu_usage() -> GPUReading {
 fn track_cpu_usage(time_period: u32) -> u32 {
     let start = Instant::now();
     let duration = Duration::from_secs(time_period as u64);
-    let mut cpu_usage:Vec<CPUReading> = Vec::new();
+    let mut cpu_usage: Vec<CPUReading> = Vec::new();
 
     while start.elapsed() < duration {
         cpu_usage.push(get_cpu_usage());
@@ -112,7 +112,7 @@ fn track_cpu_usage(time_period: u32) -> u32 {
 fn track_gpu_usage(time_period: u32) -> u32 {
     let start = Instant::now();
     let duration = Duration::from_secs(time_period as u64);
-    let mut gpu_usage:Vec<GPUReading> = Vec::new();
+    let mut gpu_usage: Vec<GPUReading> = Vec::new();
 
     while start.elapsed() < duration {
         gpu_usage.push(get_gpu_usage());
