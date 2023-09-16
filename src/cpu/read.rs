@@ -34,6 +34,7 @@ pub(crate) fn cpu() {
     Parameters: None
 */
 fn get_num_cpus() -> u16 {
+    
     return 1;
 }
 
