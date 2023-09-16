@@ -35,7 +35,7 @@ pub(crate) fn cpu() {
 */
 fn get_num_cpus() -> u16 {
     let num_cpu: u16 = 1;
-    return num_cpu;
+    num_cpu
 }
 
 /*
@@ -45,7 +45,7 @@ fn get_num_cpus() -> u16 {
 */
 fn get_num_gpus() -> u16 {
     let num_gpu: u16 = 1;
-    return num_gpu;
+    num_gpu
 }
 
 /*
@@ -55,7 +55,7 @@ fn get_num_gpus() -> u16 {
 */
 fn get_num_cpu_threads() -> u16 {
     let num_cpu_thread: u16 = 1;
-    return num_cpu_thread;
+    num_cpu_thread
 }
 
 /*
@@ -65,7 +65,7 @@ fn get_num_cpu_threads() -> u16 {
 */
 fn get_num_gpu_threads() -> u16 {
     let num_gpu_thread: u16 = 1;
-    return num_gpu_thread;
+    num_gpu_thread
 }
 
 /*
@@ -74,10 +74,10 @@ fn get_num_gpu_threads() -> u16 {
     Parameters: A vector of CPUReading structs
 */
 fn get_cpu_usage() -> CPUReading {
-    return CPUReading {
+    CPUReading {
         _cpu_usage: 1.0,
         _time_stamp: Instant::now() + Duration::from_secs(3),
-    };
+    }
 }
 
 /*
@@ -86,10 +86,10 @@ fn get_cpu_usage() -> CPUReading {
     Parameters: A vector of GPUReading structs
 */
 fn get_gpu_usage() -> GPUReading {
-    return GPUReading {
+    GPUReading {
         _gpu_usage: 1.0,
         _time_stamp: Instant::now() + Duration::from_secs(3),
-    };
+    }
 }
 
 /*
@@ -105,7 +105,7 @@ fn track_cpu_usage(time_period: u32) -> u32 {
     while start.elapsed() < duration {
         cpu_usage.push(get_cpu_usage());
     }
-    return cpu_usage.len() as u32;
+    cpu_usage.len() as u32
 }
 
 /*
@@ -121,5 +121,5 @@ fn track_gpu_usage(time_period: u32) -> u32 {
     while start.elapsed() < duration {
         gpu_usage.push(get_gpu_usage());
     }
-    return gpu_usage.len() as u32;
+    gpu_usage.len() as u32
 }
