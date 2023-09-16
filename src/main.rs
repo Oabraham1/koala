@@ -1,3 +1,7 @@
+use crate::cpu::read::cpu;
+
+mod cpu;
+
 fn main() {
-    println!("Koala is a tool for analyzing and visualuzing the performance of your cloud instances.");
+    cpu();
 }
