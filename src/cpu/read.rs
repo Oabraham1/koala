@@ -34,8 +34,8 @@ pub(crate) fn cpu() {
     Parameters: None
 */
 fn get_num_cpus() -> u16 {
-    
-    return 1;
+    let num_cpu: u16 = 1;
+    return num_cpu;
 }
 
 /*
@@ -44,7 +44,8 @@ fn get_num_cpus() -> u16 {
     Parameters: None
 */
 fn get_num_gpus() -> u16 {
-    return 1;
+    let num_gpu: u16 = 1;
+    return num_gpu;
 }
 
 /*
@@ -53,7 +54,8 @@ fn get_num_gpus() -> u16 {
     Parameters: None
 */
 fn get_num_cpu_threads() -> u16 {
-    return 1;
+    let num_cpu_thread: u16 = 1;
+    return num_cpu_thread;
 }
 
 /*
@@ -62,7 +64,8 @@ fn get_num_cpu_threads() -> u16 {
     Parameters: None
 */
 fn get_num_gpu_threads() -> u16 {
-    return 1;
+    let num_gpu_thread: u16 = 1;
+    return num_gpu_thread;
 }
 
 /*
