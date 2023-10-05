@@ -1,4 +1,7 @@
+extern crate libc;
 use std::time::{Duration, Instant};
+
+use libc::{sysconf, _SC_NPROCESSORS_CONF, _SC_CLK_TCK};
 
 struct CPUReading {
     _cpu_usage: f32,
@@ -13,12 +16,12 @@ struct GPUReading {
 pub(crate) fn cpu() {
     let num_cpus = get_num_cpus();
     let num_gpus = get_num_gpus();
-    let num_cpu_threads = get_num_cpu_threads();
+    let cpu_clock_speed = get_cpu_clock_speed();
     let num_gpu_threads = get_num_gpu_threads();
 
     println!("Number of CPUs: {}", num_cpus);
     println!("Number of GPUs: {}", num_gpus);
-    println!("Number of CPU Threads: {}", num_cpu_threads);
+    println!("CPU clock speed: {}", cpu_clock_speed);
     println!("Number of GPU Threads: {}", num_gpu_threads);
 
     let cpu_usage = track_cpu_usage(1);
@@ -34,7 +37,11 @@ pub(crate) fn cpu() {
     Parameters: None
 */
 fn get_num_cpus() -> u16 {
-    let num_cpu: u16 = 1;
+    let num_cpu: u16 = unsafe {
+        sysconf(_SC_NPROCESSORS_CONF)
+            .try_into()
+            .expect("Could not get number of CPUs")
+    };
     num_cpu
 }
 
@@ -53,9 +60,13 @@ fn get_num_gpus() -> u16 {
     Return: u16
     Parameters: None
 */
-fn get_num_cpu_threads() -> u16 {
-    let num_cpu_thread: u16 = 1;
-    num_cpu_thread
+fn get_cpu_clock_speed() -> u16 {
+    let cpu_clock_speed: u16 = unsafe {
+        sysconf(_SC_CLK_TCK)
+            .try_into()
+            .expect("Could not get CPU clock speed")
+    };
+    cpu_clock_speed
 }
 
 /*
