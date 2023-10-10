@@ -4,4 +4,4 @@
 ![Pull Requests](https://img.shields.io/github/issues-pr/oabraham1/koala)
 ![Github License](https://img.shields.io/badge/License-Apache-green.svg)
 
-Koala is an open-source tool for cloud performance analysis
+Koala is an open-source tool for monitoring and analyzing compute resource usage on raspberry pi and arduino boards.
