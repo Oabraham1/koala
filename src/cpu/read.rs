@@ -8,6 +8,12 @@ struct CPUReading {
     _time_stamp: Instant,
 }
 
+struct SystemInformation {
+    _arch: str,
+    _os: str,
+    _chip: str,
+}
+
 pub(crate) fn cpu() {
     let num_cpus = get_num_cpus();
     let cpu_clock_speed = get_cpu_clock_speed();
@@ -74,4 +80,16 @@ fn track_cpu_usage(time_period: u32) -> u32 {
         cpu_usage.push(get_cpu_usage());
     }
     cpu_usage.len() as u32
+}
+
+/*
+    Description: This function reads information about the system architecture
+    Return: System architectural information like CPU bit, OS, and chip information
+ */
+fn get_system_info() -> SystemInformation {
+    SystemInformation {
+        _arch: "x86".parse().unwrap(),
+        _os: "macOS".parse().unwrap(),
+        _chip: "Intel".parse().unwrap(),
+    }
 }

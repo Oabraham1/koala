@@ -1,3 +1,3 @@
 fn auth() {
-    println!("Authentication for instance goes here")
+    println!("Authentication for board goes here")
 }

@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 libc = "0.2.153"
 num = "0.4.2"
+sysinfo = "0.29.10"
