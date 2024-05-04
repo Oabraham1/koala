@@ -1,6 +1,3 @@
-//go:build darwin
-// +build darwin
-
 package process
 
 import (
