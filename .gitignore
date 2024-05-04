@@ -4,3 +4,4 @@ coverage.txt
 *.csr
 *.pem
 target
+.zed
